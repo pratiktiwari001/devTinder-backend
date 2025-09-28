@@ -4,17 +4,45 @@ const express = require('express');
 //it can also be referred as Web Server
 const app = express();
 
-app.use("/test",(req,res)=>{
-    res.send("Test from the server!!");
-})
+const user = {
+    "name" : "pratik",
+    "age" : 20,
+    "city" : "delhi"
+}
 
-app.use("/hello",(req,res)=>{
-    res.send("Hello from the server!!");
-})
+app.get("/user",[(req,res,next)=>{
+    console.log("Getting the user 1st time");
+    next();
+    // res.send("Response 1");
+},(req,res,next)=>{
+    console.log("Getting the user 2nd time");
+    next();
+    // res.send("Response 2");
+},(req,res,next)=>{
+    console.log("Getting the user 3rd time");
+    // res.send("Response 3");
+    next();
+},(req,res,next)=>{
+    console.log("Getting the user 4th time");
+    // res.send("Response 4");
+    next();
+},(req,res)=>{
+    console.log("Getting the user 5th time");
+    res.send("Response 5");
+}]);
 
-app.use("/",(req,res)=>{
-    res.send("I am Home Page!!");
-})
+app.post("/user",(req,res)=>{
+    res.send("Data Saved successfully");
+});
+
+app.delete("/user",(req,res)=>{
+    res.send("Data Deleted successfully");
+});
+
+app.use("/user",(req,res)=>{
+    res.send("I am default!!")
+});
+
 
 port = 7777;
 app.listen(port,()=>{

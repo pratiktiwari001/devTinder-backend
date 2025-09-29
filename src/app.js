@@ -22,8 +22,15 @@ app.get("/delete/getdata",(req,res)=>{
 });
 
 app.get("/delete/userdata",(req,res)=>{
-    res.send("data deleted");
-    console.log("Delete Data")
+    try {
+        throw new Error('undefined')
+        res.send("data deleted");
+        console.log("Delete Data");
+        
+    } catch (error) {
+        res.status(502).send("error occured");
+        console.log("Some error!");
+    }
 });
 
 app.post("/user/login",(req,res)=>{
@@ -41,6 +48,12 @@ app.post("/user",(req,res)=>{
 
 app.delete("/user",(req,res)=>{
     res.send("Data Deleted successfully");
+});
+
+
+app.use("/",(err,req,res,next)=>{
+    res.status(501).send("there is error!");
+    console.log("Some error!");
 });
 
 // app.use("/user",(req,res)=>{

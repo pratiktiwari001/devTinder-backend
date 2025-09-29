@@ -1,8 +1,11 @@
 const express = require('express');
+const {adminAuth,userAuth} = require('./middlewares/auth.js');
+
 
 // this app is an instance of express js application
 //it can also be referred as Web Server
 const app = express();
+
 
 const user = {
     "name" : "pratik",
@@ -10,26 +13,27 @@ const user = {
     "city" : "delhi"
 }
 
-app.get("/user",[(req,res,next)=>{
-    console.log("Getting the user 1st time");
-    next();
-    // res.send("Response 1");
-},(req,res,next)=>{
-    console.log("Getting the user 2nd time");
-    next();
-    // res.send("Response 2");
-},(req,res,next)=>{
-    console.log("Getting the user 3rd time");
-    // res.send("Response 3");
-    next();
-},(req,res,next)=>{
-    console.log("Getting the user 4th time");
-    // res.send("Response 4");
-    next();
-},(req,res)=>{
-    console.log("Getting the user 5th time");
-    res.send("Response 5");
-}]);
+//Middleware for authorization
+app.use("/delete",adminAuth);
+
+app.get("/delete/getdata",(req,res)=>{
+    res.send("data fetched");
+    console.log("Get Data")
+});
+
+app.get("/delete/userdata",(req,res)=>{
+    res.send("data deleted");
+    console.log("Delete Data")
+});
+
+app.post("/user/login",(req,res)=>{
+    res.send("Logged In Successfully!");
+    console.log("/user/login works fine")
+});
+
+app.get("/user",userAuth,(req,res)=>{
+    res.send("Access granted");
+});
 
 app.post("/user",(req,res)=>{
     res.send("Data Saved successfully");
@@ -39,9 +43,9 @@ app.delete("/user",(req,res)=>{
     res.send("Data Deleted successfully");
 });
 
-app.use("/user",(req,res)=>{
-    res.send("I am default!!")
-});
+// app.use("/user",(req,res)=>{
+//     res.send("I am default!!")
+// });
 
 
 port = 7777;

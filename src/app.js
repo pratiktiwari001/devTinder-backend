@@ -7,19 +7,22 @@ const User = require('./models/user')
 //it can also be referred as Web Server
 const app = express();
 
+//middleware for converting json data into js object
+app.use("/",express.json());
+
+
 //creating new instance of user model
 app.post("/signup",async (req,res)=>{
-const user = new User({
-      firstName : "Virat",
-      lastName : "Kohli",
-      emailID : "virat@kohli.com",
-      age : 36,
-      gender : "male"  
-    });
+console.log(req.body);
+const user = new User(req.body);
 
-await user.save();
-res.send("data saved")
-})
+try {
+    await user.save();
+    res.send("data saved")  
+} catch (error) {
+    res.status(400).send("Error sending the user: "+error.message)
+}
+});
 
 connectDB().then(()=>{
     console.log("connected succesfully!!")

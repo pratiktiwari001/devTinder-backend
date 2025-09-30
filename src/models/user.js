@@ -2,22 +2,39 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
     firstName:{
-        type:String
+        type:String,
+        minLength : 1,
+        maxLength : 30,
+        required : true,
     },
     lastName:{
         type:String
     },
     emailID:{
-        type:String
+        type:String,
+        required : true,
+        lowercase : true,
+        unique : true,
+        trim : true,
     },
     password:{
-        type:String
+        type:String,
+        required : true,
     },
     age:{
-        type:Number
+        type:Number,
+        min : 18
     },
     gender:{
-        type:String
+        type:String,
+        validate(value){
+            if(!["male","female","others"].includes(value)){
+                throw new Error("Gender Data is not Valid");
+            }}
+    },
+    photoUrl:{
+        type: String,
+        default: "https://t3.ftcdn.net/jpg/06/19/26/46/360_F_619264680_x2PBdGLF54sFe7kTBtAvZnPyXgvaRw0Y.jpg",
     }
 });
 

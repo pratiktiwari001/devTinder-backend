@@ -10,6 +10,20 @@ const app = express();
 //middleware for converting json data into js object
 app.use("/",express.json());
 
+//creating new instance of user model 
+// post api - /signup
+app.post("/signup",async (req,res)=>{
+console.log(req.body);
+const user = new User(req.body);
+
+try {
+    await user.save();
+    res.send("data saved")  
+} catch (error) {
+    res.status(400).send("Error sending the user: "+error.message)
+}
+});
+
 //getting users with filtered mail ID
 app.get("/user",async (req,res)=>{
     const userMail = req.body.emailID;
@@ -80,30 +94,17 @@ app.patch("/user",async (req,res)=>{
     const userMail = req.body.emailID;
     const data = req.body;
     try {
-        const user = await User.findOneAndUpdate({emailID:userMail},data , {returnDocument:'after'});
+        const user = await User.findOneAndUpdate({emailID:userMail},data , {returnDocument:'after',runValidators:true});
         if(!user){
             res.status(404).send("not found")
         } else {
             res.send("User Updated Successfully")
         }  
     } catch (error) {
-        res.status(400).send("Some error occured")
+        res.status(400).send("UPDATE FAILED" + error.message);
     }
 })
 
-//creating new instance of user model 
-// post api - /signup
-app.post("/signup",async (req,res)=>{
-console.log(req.body);
-const user = new User(req.body);
-
-try {
-    await user.save();
-    res.send("data saved")  
-} catch (error) {
-    res.status(400).send("Error sending the user: "+error.message)
-}
-});
 
 connectDB().then(()=>{
     console.log("connected succesfully!!")

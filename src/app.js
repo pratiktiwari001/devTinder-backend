@@ -10,8 +10,49 @@ const app = express();
 //middleware for converting json data into js object
 app.use("/",express.json());
 
+//getting users with filtered mail ID
+app.get("/users",async (req,res)=>{
+    const userMail = req.body.emailID;
+    try {
+        const users = await User.find({emailID : userMail});
+        if(users.length === 0){
+            res.status(404).send("No user found!!")
+        } else{
+        res.send(users);}
+    } catch (error) {
+        res.status(400).send("Something went wrong")
+    }
+})
 
-//creating new instance of user model
+// feed api - /feed
+app.get("/feed",async (req,res)=>{
+    try {
+       const users = await User.find({});
+       if(users.length === 0){
+            res.status(404).send("No user found!!")
+        } else{
+        res.send(users);}
+    } catch (error) {
+        res.status(400).send("Some error occured!")
+    }
+})
+
+// get -findById
+app.get("/feed/id",async (req,res)=>{
+    try {
+       const user = await User.findById('68db8720ec3c56e61548a428');
+       if(!user){
+            res.status(404).send("No user found!!")
+        } else{
+        res.send(user);}
+    } catch (error) {
+        res.status(400).send("Some error occured!")
+    }
+})
+
+
+//creating new instance of user model 
+// signup api - /signup
 app.post("/signup",async (req,res)=>{
 console.log(req.body);
 const user = new User(req.body);

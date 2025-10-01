@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
         required : true,
     },
     lastName:{
-        type:String
+        type:String,
+        default: "N/A"
     },
     emailID:{
         type:String,
@@ -35,7 +36,12 @@ const userSchema = new mongoose.Schema({
     photoUrl:{
         type: String,
         default: "https://t3.ftcdn.net/jpg/06/19/26/46/360_F_619264680_x2PBdGLF54sFe7kTBtAvZnPyXgvaRw0Y.jpg",
+    },
+    skills:{
+        type: [String]
     }
+}, {
+    timestamps: true
 });
 
 // const User = mongoose.model("User",userSchema);

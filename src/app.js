@@ -1,6 +1,8 @@
 const express = require('express');
 const connectDB = require("./config/database");
-const User = require('./models/user')
+const User = require('./models/user');
+const { isValidData } = require('./utils/validation');
+const  bcrypt  = require('bcrypt')
 
 
 // this app is an instance of express js application
@@ -15,15 +17,25 @@ app.use("/", express.json());
 app.post("/signup", async (req, res) => {
     
     try {
-        const data = req.body;
-        if (data?.skills?.length > 10){
-            throw new Error("You can add maximum 10 skills")
-        }
-        const user = new User(data);
+        //Validate User Data
+        isValidData(req);
+        const {firstName, lastName, emailID, password} = req.body;
+
+        //Hashing the PASSWORD
+        const passwordHash = await bcrypt.hash(password,10);
+
+        //creating new Instance of User Model
+        const user = new User({
+            firstName,
+            lastName,
+            emailID,
+            password: passwordHash 
+        });
+        //saving user to DB
         await user.save();
         res.send("data saved")
     } catch (error) {
-        res.status(400).send("Error sending the user: " + error.message)
+        res.status(400).send("ERROR: " + error.message)
     }
 });
 

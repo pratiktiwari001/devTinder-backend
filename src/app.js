@@ -2,7 +2,8 @@ const express = require('express');
 const connectDB = require("./config/database");
 const User = require('./models/user');
 const { isValidData } = require('./utils/validation');
-const  bcrypt  = require('bcrypt')
+const bcrypt = require('bcrypt')
+const validator = require('validator')
 
 
 // this app is an instance of express js application
@@ -15,21 +16,21 @@ app.use("/", express.json());
 //creating new instance of user model 
 // post api - /signup
 app.post("/signup", async (req, res) => {
-    
+
     try {
         //Validate User Data
         isValidData(req);
-        const {firstName, lastName, emailID, password} = req.body;
+        const { firstName, lastName, emailID, password } = req.body;
 
         //Hashing the PASSWORD
-        const passwordHash = await bcrypt.hash(password,10);
+        const passwordHash = await bcrypt.hash(password, 10);
 
         //creating new Instance of User Model
         const user = new User({
             firstName,
             lastName,
             emailID,
-            password: passwordHash 
+            password: passwordHash
         });
         //saving user to DB
         await user.save();
@@ -38,6 +39,31 @@ app.post("/signup", async (req, res) => {
         res.status(400).send("ERROR: " + error.message)
     }
 });
+
+// login api - /login
+app.post("/login", async (req, res) => {
+    try {
+        const { emailID, password } = req.body;
+        if (!validator.isEmail(emailID)) {
+            throw new Error("Invalid Credentials");
+        }
+        
+        //finds user with the emailID
+        const user = await User.findOne({ emailID: emailID });
+        if (!user) {
+            throw new Error("Invalid Credentials");
+        }
+
+        //compares password given by user to the password stored in DB
+        const passwordCheck = await bcrypt.compare(password, user.password)
+        if (!passwordCheck) {
+            throw new Error("Invalid Credentials");
+        }
+        res.send("LOGIN SUCCESSFUL");
+    } catch (error) {
+        res.status(400).send("ERROR: " + error.message);
+    }
+})
 
 //getting users with filtered mail ID
 app.get("/user", async (req, res) => {
@@ -118,7 +144,7 @@ app.patch("/user/:userID", async (req, res) => {
         if (!isAllowed) {
             throw new Error("Update not allowed");
         }
-        if (data?.skills?.length > 10){
+        if (data?.skills?.length > 10) {
             throw new Error("You can add maximum 10 skills")
         }
         const user = await User.findByIdAndUpdate({ _id: userID }, data, { returnDocument: 'after', runValidators: true });

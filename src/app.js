@@ -3,7 +3,9 @@ const connectDB = require("./config/database");
 const User = require('./models/user');
 const { isValidData } = require('./utils/validation');
 const bcrypt = require('bcrypt')
-const validator = require('validator')
+const validator = require('validator');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken')
 
 
 // this app is an instance of express js application
@@ -12,6 +14,7 @@ const app = express();
 
 //middleware for converting json data into js object
 app.use("/", express.json());
+app.use(cookieParser())
 
 //creating new instance of user model 
 // post api - /signup
@@ -59,9 +62,41 @@ app.post("/login", async (req, res) => {
         if (!passwordCheck) {
             throw new Error("Invalid Credentials");
         }
+
+        //create a JWT Token
+        const token = await jwt.sign({_id: user._id},"DEV@tinder123");
+
+        // Add the token to the cookie and send the response back to the user
+        res.cookie("token",token)
+
         res.send("LOGIN SUCCESSFUL");
     } catch (error) {
         res.status(400).send("ERROR: " + error.message);
+    }
+})
+
+// profile page - /profile
+app.get("/profile",async (req,res)=>{
+    try {
+        const cookie = req.cookies
+        const { token } = cookie
+
+        if(!token){
+            throw new Error("Invalid Token")
+        }
+
+        //validate the token
+        const decodedToken = await jwt.verify(token,"DEV@tinder123")
+        const { _id } = decodedToken;
+
+        const user = await User.findById(_id);
+        if(!user){
+            throw new Error("Please Login Again")
+        }
+    
+        res.send(user)
+    } catch (error) {
+        res.status(400).send(error.message)
     }
 })
 
@@ -80,20 +115,6 @@ app.get("/user", async (req, res) => {
     }
 })
 
-// get - /feed
-app.get("/feed", async (req, res) => {
-    try {
-        const users = await User.find({});
-        if (users.length === 0) {
-            res.status(404).send("No user found!!")
-        } else {
-            res.send(users);
-        }
-    } catch (error) {
-        res.status(400).send("Some error occured!")
-    }
-})
-
 // get -findById
 app.get("/feed/id", async (req, res) => {
     try {
@@ -108,6 +129,19 @@ app.get("/feed/id", async (req, res) => {
     }
 })
 
+// get - /feed
+app.get("/feed", async (req, res) => {
+    try {
+        const users = await User.find({});
+        if (users.length === 0) {
+            res.status(404).send("No user found!!")
+        } else {
+            res.send(users);
+        }
+    } catch (error) {
+        res.status(400).send("Some error occured!")
+    }
+})
 
 // delete user by their ID
 app.delete("/user", async (req, res) => {
@@ -119,7 +153,6 @@ app.delete("/user", async (req, res) => {
         res.status(400).send("Some error occured!")
     }
 })
-
 
 //delete by other fields
 app.delete("/user/name", async (req, res) => {
@@ -157,6 +190,7 @@ app.patch("/user/:userID", async (req, res) => {
         res.status(400).send("UPDATE FAILED: " + error.message);
     }
 })
+
 
 
 connectDB().then(() => {

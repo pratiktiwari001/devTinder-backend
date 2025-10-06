@@ -8,7 +8,7 @@ const validator = require('validator');
 const authRouter = express.Router();
 
 //creating new instance of user model 
-// post api - /signup
+// signup api
 authRouter.post("/signup", async (req, res) => {
 
     try {
@@ -34,14 +34,14 @@ authRouter.post("/signup", async (req, res) => {
     }
 });
 
-// login api - /login
+// login api
 authRouter.post("/login", async (req, res) => {
     try {
         const { emailID, password } = req.body;
         if (!validator.isEmail(emailID)) {
             throw new Error("Invalid Credentials");
         }
-        
+
         //finds user with the emailID
         const user = await User.findOne({ emailID: emailID });
         if (!user) {
@@ -58,12 +58,20 @@ authRouter.post("/login", async (req, res) => {
         const token = await user.createToken();
 
         // Add the token to the cookie and send the response back to the user
-        res.cookie("token",token,{expires: new Date(Date.now() + 7 * 86400000)})
+        res.cookie("token", token, { expires: new Date(Date.now() + 7 * 86400000) })
 
         res.send("LOGIN SUCCESSFUL");
     } catch (error) {
         res.status(400).send("ERROR: " + error.message);
     }
+})
+
+// logout api
+authRouter.post("/logout", async (req, res) => {
+    //cleaning activities and expiring cookies
+    res.cookie("token", null, { expires: new Date(Date.now()) })
+    res.send("LOGOUT Successful");
+
 })
 
 

@@ -19,14 +19,12 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
 // profile edit
 profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     try {
+        const loggedInUser = req.user;
         if (!validateProfileEditData(req)) {
             throw new Error("UPDATE not allowed");
         }
 
-        const loggedInUser = req.user;
-        console.log(loggedInUser);
-
-        Object.keys(req.body).forEach((key) => loggedInUser[key] = req.body[key]);
+        Object.keys(req.body).forEach((key) =>{ loggedInUser[key] = req.body[key]});
         await loggedInUser.save();
 
         res.json({message: "User Updated Successfully",data: loggedInUser})

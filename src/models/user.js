@@ -41,10 +41,10 @@ const userSchema = new mongoose.Schema({
     },
     gender:{
         type:String,
-        validate(value){
-            if(!["male","female","others"].includes(value)){
-                throw new Error("Gender Data is not Valid");
-            }}
+        enum : {
+            values: ["male","female"],
+            message: `{VALUE} is not a gender`
+        }
     },
     photoUrl:{
         type: String,
@@ -69,7 +69,6 @@ userSchema.methods.createToken = async function(){
     return token;
 }
 
-
 userSchema.methods.passwordCheck = async function(passwordEntered) {
     const user = this;
     const isPasswordValid = await bcrypt.compare(passwordEntered, user.password)
@@ -77,5 +76,4 @@ userSchema.methods.passwordCheck = async function(passwordEntered) {
 }
 
 // const User = mongoose.model("User",userSchema);
-
 module.exports = mongoose.model("User",userSchema);

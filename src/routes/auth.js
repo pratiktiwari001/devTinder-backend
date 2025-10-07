@@ -19,6 +19,7 @@ authRouter.post("/signup", async (req, res) => {
         //Hashing the PASSWORD
         const passwordHash = await bcrypt.hash(password, 10);
 
+
         //creating new Instance of User Model
         const user = new User({
             firstName,
@@ -26,6 +27,13 @@ authRouter.post("/signup", async (req, res) => {
             emailID,
             password: passwordHash
         });
+
+        // check whether email already exists in DB
+        const userExist = await User.findOne({emailID: emailID});
+        if(userExist){
+            throw new Error("This Email is already in use")
+        }
+
         //saving user to DB
         await user.save();
         res.send("data saved")

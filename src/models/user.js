@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
         minLength : 1,
         maxLength : 30,
         required : true,
+        index: true,
     },
     lastName:{
         type:String,
@@ -61,6 +62,8 @@ const userSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+
+userSchema.index({firstName:1, lastName:1});
 
 userSchema.methods.createToken = async function(){
     const user = this;

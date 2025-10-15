@@ -11,7 +11,6 @@ const isValidData =(req)=>{
         throw new Error("Password is too weak");
     }
 }
-
 const validateProfileEditData = (req)=>{
     const allowedFields = ["firstName","lastName","age","gender","photoUrl","skills"]
     const isAllowed = Object.keys(req.body).every(field => allowedFields.includes(field));

@@ -4,7 +4,7 @@ const ConnectionRequest = require('../models/connectionRequest')
 const User = require('../models/user')
 const userRouter = express.Router();
 
-const requiredInfo = "firstName lastName age gender photoUrl"
+const requiredInfo = "firstName lastName age gender photoUrl skills"
 
 // Get all the pending connection request for loggedIn user
 userRouter.get("/user/requests/pending", userAuth, async (req, res) => {
@@ -15,7 +15,7 @@ userRouter.get("/user/requests/pending", userAuth, async (req, res) => {
         const pendingRequests = await ConnectionRequest.find({
             toUserId: loggedInUser._id, status: "interested"
             // }).populate("fromUserId",["firstName","lastName"]);
-        }).populate("fromUserId", requiredInfo);
+        }).populate("fromUserId", "firstName lastName age gender photoUrl age gender skills");
 
         if (!pendingRequests) {
             return res.status(404).json({ message: "No pending requests" })

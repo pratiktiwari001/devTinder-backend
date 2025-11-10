@@ -2,6 +2,7 @@ const express = require('express');
 const connectDB = require("./config/database");
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+require('dotenv').config();
 
 // this app is an instance of express js application
 //it can also be referred as Web Server
@@ -31,7 +32,7 @@ app.use("/",userRouter)
 // DB connection
 connectDB().then(() => {
     console.log("connected succesfully!!")
-    port = 7777;
+    port = process.env.PORT;
     app.listen(port, '0.0.0.0', () => {
         console.log(`Server is Running at port http://localhost:${port}`);
     });

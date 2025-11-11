@@ -39,10 +39,11 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
         })
 
         const connectionData = await connectionRequest.save();
-        await run(
+        if(status === "interested"){
+            await run(
             `A New Request`,
             `${req.user.firstName} is ${status} in ${toUser.firstName}`
-        );
+        )};
 
         res.json({
             message: `${req.user.firstName} is ${status} in ${toUser.firstName}`,

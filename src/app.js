@@ -11,7 +11,7 @@ require("./utils/cronjob");
 const app = express();
 
 app.use(cors({
-    origin: "https://developerstinder-devtinder.vercel.app",
+    origin: ["https://developerstinder-devtinder.vercel.app", "http://localhost:5173"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"], 
 }));

@@ -68,7 +68,7 @@ userSchema.index({firstName:1, lastName:1});
 userSchema.methods.createToken = async function(){
     const user = this;
 
-    const token = await jwt.sign({_id:user._id},"DEV@tinder123",{expiresIn:'7d'});
+    const token = await jwt.sign({_id:user._id},process.env.JWT_SECRET,{expiresIn:'1d'});
     return token;
 }
 

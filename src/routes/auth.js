@@ -39,7 +39,13 @@ authRouter.post("/signup", async (req, res) => {
         const token = await savedUser.createToken();
 
         // Add the token to the cookie and send the response back to the user
-        res.cookie("token", token, { expires: new Date(Date.now() + 7 * 86400000), httpOnly: true, })
+        // res.cookie("token", token, { expires: new Date(Date.now() + 24*60*60*1000), httpOnly: true, })
+        res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 24 * 60 * 60 * 1000
+    })
 
         res.json({message: "User added successfully", data: savedUser});
     } catch (error) {
